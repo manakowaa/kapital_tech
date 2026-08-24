@@ -1,0 +1,3108 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<meta name="theme-color" content="#0d1015">
+<meta name="description" content="Могу себе позволить? — простой инструмент для принятия финансовых решений.">
+
+<title>Могу себе позволить?</title>
+
+<style>
+:root{
+    --bg:#0d1015;
+    --card:#181d25;
+    --card2:#1d232c;
+    --input:#10141a;
+    --border:rgba(255,255,255,.07);
+    --border2:#303844;
+    --text:#eeeae2;
+    --soft:#c7c7c2;
+    --muted:#858d98;
+    --green:#91aa99;
+    --green-light:#b5c8ba;
+    --yellow:#b69b67;
+    --yellow-light:#cdb47d;
+    --red:#9d6c6c;
+    --red-light:#bd8888;
+}
+
+*{box-sizing:border-box}
+
+html{scroll-behavior:smooth}
+
+body{
+    margin:0;
+    min-height:100vh;
+    background:
+        radial-gradient(
+            ellipse at 50% -20%,
+            rgba(68,80,97,.28),
+            transparent 55%
+        ),
+        var(--bg);
+    color:var(--text);
+    font-family:
+        Inter,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+    -webkit-font-smoothing:antialiased;
+}
+
+::-webkit-scrollbar{width:8px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{
+    background:#3b444f;
+    border:2px solid transparent;
+    background-clip:padding-box;
+    border-radius:20px;
+}
+
+.app{
+    width:min(780px,calc(100% - 30px));
+    margin:0 auto;
+    padding:25px 0 45px;
+}
+
+/* HEADER */
+
+.header{
+    padding:20px 0 30px;
+    text-align:center;
+}
+
+.brand{
+    display:inline-flex;
+    align-items:center;
+    gap:9px;
+    color:#9da5b0;
+    font-size:10px;
+    font-weight:750;
+    letter-spacing:2px;
+    text-transform:uppercase;
+}
+
+.brand-logo{
+    width:28px;
+    height:28px;
+}
+
+.header h1{
+    margin:25px 0 16px;
+    font-size:clamp(43px,8vw,68px);
+    line-height:.92;
+    letter-spacing:-3.8px;
+    font-weight:800;
+}
+
+.header-description{
+    max-width:540px;
+    margin:auto;
+    color:var(--muted);
+    font-size:15px;
+    line-height:1.65;
+}
+
+/* CARD */
+
+.card{
+    background:
+        linear-gradient(
+            145deg,
+            rgba(27,33,42,.97),
+            rgba(18,23,30,.97)
+        );
+    border:1px solid var(--border);
+    border-radius:25px;
+    padding:27px;
+    box-shadow:0 30px 90px rgba(0,0,0,.42);
+    backdrop-filter:blur(20px);
+}
+
+/* PROFILE */
+
+.profile-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:22px;
+}
+
+.profile-title{
+    font-size:17px;
+    font-weight:750;
+}
+
+.profile-updated{
+    margin-top:4px;
+    color:var(--muted);
+    font-size:11px;
+}
+
+.profile-grid{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:9px;
+    margin-bottom:23px;
+}
+
+.profile-item{
+    padding:14px;
+    background:rgba(255,255,255,.025);
+    border:1px solid rgba(255,255,255,.045);
+    border-radius:14px;
+}
+
+.profile-item-label{
+    display:block;
+    margin-bottom:7px;
+    color:var(--muted);
+    font-size:10px;
+}
+
+.profile-item-value{
+    font-size:15px;
+}
+
+/* PROGRESS */
+
+.progress{
+    height:3px;
+    margin-bottom:29px;
+    overflow:hidden;
+    border-radius:20px;
+    background:#272e38;
+}
+
+.progress-bar{
+    width:16.66%;
+    height:100%;
+    background:linear-gradient(90deg,#708778,#a5baab);
+    transition:width .35s ease;
+}
+
+/* FORM */
+
+.step h2{
+    margin:0 0 9px;
+    font-size:26px;
+    letter-spacing:-.7px;
+}
+
+.step-description{
+    max-width:620px;
+    margin:0 0 25px;
+    color:var(--muted);
+    font-size:14px;
+    line-height:1.65;
+}
+
+.field{margin-bottom:17px}
+
+.field label{
+    display:block;
+    margin-bottom:8px;
+    color:var(--soft);
+    font-size:13px;
+}
+
+.input-wrap{
+    position:relative;
+}
+
+input,select{
+    width:100%;
+    min-height:53px;
+    padding:15px 16px;
+    color:var(--text);
+    background:rgba(8,11,15,.72);
+    border:1px solid var(--border2);
+    border-radius:14px;
+    outline:none;
+    font-size:17px;
+    transition:.2s ease;
+}
+
+input:focus,select:focus{
+    background:#11161d;
+    border-color:rgba(145,170,153,.72);
+    box-shadow:
+        0 0 0 1px rgba(145,170,153,.12),
+        0 0 28px rgba(145,170,153,.08);
+}
+
+input::placeholder{
+    color:#5c6470;
+}
+
+input[type="text"]{
+    letter-spacing:0;
+}
+
+select{
+    appearance:auto;
+}
+
+.money-hint{
+    margin-top:7px;
+    color:#626a75;
+    font-size:11px;
+}
+
+/* BUTTONS */
+
+.actions{
+    display:flex;
+    gap:10px;
+    margin-top:25px;
+}
+
+button{
+    min-height:52px;
+    padding:0 20px;
+    border:0;
+    border-radius:14px;
+    cursor:pointer;
+    font-size:14px;
+    font-weight:750;
+    transition:.18s ease;
+}
+
+button:active{
+    transform:translateY(1px) scale(.99);
+}
+
+.primary{
+    flex:1;
+    color:#101510;
+    background:linear-gradient(135deg,#91aa99,#788f80);
+    box-shadow:0 9px 30px rgba(115,145,126,.18);
+}
+
+.primary:hover{
+    background:linear-gradient(135deg,#a7bdad,#879f8f);
+    box-shadow:0 13px 40px rgba(133,165,143,.28);
+}
+
+.secondary{
+    color:#d7d8d5;
+    background:#202630;
+    border:1px solid #303744;
+}
+
+.secondary:hover{
+    background:#282f3a;
+}
+
+.text-button{
+    min-height:auto;
+    padding:5px;
+    color:var(--muted);
+    background:transparent;
+    font-size:12px;
+    font-weight:500;
+}
+
+.text-button:hover{
+    color:var(--soft);
+    transform:none;
+    box-shadow:none;
+}
+
+.hidden{display:none!important}
+
+/* RESULT */
+
+.result{text-align:center}
+
+.result-icon{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    width:54px;
+    height:54px;
+    margin:0 auto 16px;
+    border-radius:50%;
+    font-size:23px;
+    font-weight:800;
+}
+
+.result-icon.green{
+    color:var(--green-light);
+    background:rgba(145,170,153,.1);
+    border:1px solid rgba(145,170,153,.25);
+}
+
+.result-icon.yellow{
+    color:var(--yellow-light);
+    background:rgba(182,155,103,.1);
+    border:1px solid rgba(182,155,103,.25);
+}
+
+.result-icon.red{
+    color:var(--red-light);
+    background:rgba(157,108,108,.1);
+    border:1px solid rgba(157,108,108,.25);
+}
+
+.result-status{
+    font-size:clamp(29px,7vw,42px);
+    letter-spacing:-1.5px;
+    font-weight:800;
+}
+
+.result-status.green{color:var(--green-light)}
+.result-status.yellow{color:var(--yellow-light)}
+.result-status.red{color:var(--red-light)}
+
+.result-summary{
+    max-width:620px;
+    margin:12px auto 29px;
+    color:var(--soft);
+    font-size:15px;
+    line-height:1.65;
+}
+
+/* SNAPSHOT */
+
+.purchase-snapshot{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:9px;
+    margin-bottom:13px;
+}
+
+.snapshot-item{
+    padding:17px 15px;
+    text-align:left;
+    background:rgba(255,255,255,.025);
+    border:1px solid rgba(255,255,255,.055);
+    border-radius:16px;
+}
+
+.snapshot-label{
+    display:block;
+    margin-bottom:7px;
+    color:var(--muted);
+    font-size:10px;
+}
+
+.snapshot-value{
+    font-size:20px;
+    font-weight:760;
+    letter-spacing:-.4px;
+}
+
+/* MEANING */
+
+.meaning{
+    padding:21px;
+    margin-bottom:13px;
+    text-align:left;
+    background:
+        linear-gradient(
+            145deg,
+            rgba(31,38,47,.9),
+            rgba(23,29,37,.9)
+        );
+    border:1px solid rgba(255,255,255,.06);
+    border-radius:18px;
+}
+
+.meaning-title{
+    margin-bottom:10px;
+    font-size:15px;
+    font-weight:750;
+}
+
+.meaning-text{
+    margin:0;
+    color:var(--soft);
+    font-size:14px;
+    line-height:1.7;
+}
+
+/* RECOMMENDATION */
+
+.recommendation{
+    padding:22px;
+    margin-bottom:13px;
+    text-align:left;
+    background:rgba(8,11,15,.5);
+    border:1px solid rgba(255,255,255,.06);
+    border-radius:18px;
+}
+
+.recommendation-title{
+    margin-bottom:7px;
+    font-size:15px;
+    font-weight:750;
+}
+
+.recommendation-text{
+    margin:0 0 18px;
+    color:var(--soft);
+    font-size:14px;
+    line-height:1.7;
+}
+
+.recommendation-action{
+    padding:15px;
+    background:rgba(145,170,153,.055);
+    border:1px solid rgba(145,170,153,.1);
+    border-radius:13px;
+}
+
+.recommendation-action-label{
+    display:block;
+    margin-bottom:6px;
+    color:var(--muted);
+    font-size:10px;
+    text-transform:uppercase;
+    letter-spacing:1px;
+}
+
+.recommendation-action strong{
+    color:var(--green-light);
+    font-size:14px;
+    line-height:1.5;
+}
+
+/* PLAN */
+
+.plan{
+    margin-bottom:13px;
+    text-align:left;
+}
+
+.plan-toggle{
+    width:100%;
+    min-height:50px;
+    padding:0 17px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    color:var(--soft);
+    background:rgba(255,255,255,.025);
+    border:1px solid rgba(255,255,255,.06);
+}
+
+.plan-toggle:hover{
+    background:rgba(255,255,255,.045);
+    box-shadow:none;
+}
+
+.plan-toggle span:last-child{
+    color:var(--muted);
+    transition:.2s ease;
+}
+
+.plan-toggle.open span:last-child{
+    transform:rotate(180deg);
+}
+
+.plan-details{
+    display:none;
+    padding:17px;
+    margin-top:7px;
+    background:rgba(8,11,15,.48);
+    border:1px solid rgba(255,255,255,.05);
+    border-radius:14px;
+}
+
+.plan-details.open{display:block}
+
+.plan-row{
+    display:flex;
+    justify-content:space-between;
+    gap:20px;
+    padding:11px 0;
+    border-bottom:1px solid rgba(255,255,255,.055);
+    font-size:13px;
+}
+
+.plan-row:last-child{border-bottom:0}
+
+.plan-row span{color:var(--muted)}
+.plan-row strong{text-align:right}
+
+/* FREEDOM */
+
+.freedom-detail{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:9px;
+    margin-bottom:13px;
+}
+
+.freedom-card{
+    padding:19px;
+    text-align:left;
+    background:rgba(255,255,255,.025);
+    border:1px solid rgba(255,255,255,.055);
+    border-radius:16px;
+}
+
+.freedom-label{
+    display:block;
+    color:var(--muted);
+    font-size:10px;
+    line-height:1.5;
+}
+
+.freedom-value{
+    display:block;
+    margin-top:8px;
+    font-size:25px;
+    letter-spacing:-1px;
+    font-weight:800;
+}
+
+.freedom-description{
+    margin:7px 0 0;
+    color:var(--muted);
+    font-size:11px;
+    line-height:1.5;
+}
+
+/* SERVICE */
+
+.cta{
+    padding:22px;
+    text-align:left;
+    background:
+        linear-gradient(
+            135deg,
+            rgba(37,47,55,.72),
+            rgba(26,33,42,.72)
+        );
+    border:1px solid rgba(140,169,149,.13);
+    border-radius:18px;
+}
+
+.cta-kicker{
+    margin-bottom:8px;
+    color:var(--green-light);
+    font-size:10px;
+    font-weight:750;
+    letter-spacing:1.5px;
+    text-transform:uppercase;
+}
+
+.cta-title{
+    margin-bottom:9px;
+    font-size:20px;
+    line-height:1.25;
+    font-weight:780;
+    letter-spacing:-.4px;
+}
+
+.cta-text{
+    margin:0 0 19px;
+    color:var(--muted);
+    font-size:13px;
+    line-height:1.65;
+}
+
+.service-list{
+    display:grid;
+    gap:8px;
+    margin-bottom:19px;
+}
+
+.service-item{
+    display:flex;
+    gap:11px;
+    align-items:flex-start;
+    padding:12px 13px;
+    background:rgba(8,11,15,.34);
+    border:1px solid rgba(255,255,255,.05);
+    border-radius:13px;
+}
+
+.service-check{
+    flex:0 0 20px;
+    width:20px;
+    height:20px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:var(--green-light);
+    background:rgba(145,170,153,.09);
+    border-radius:50%;
+    font-size:11px;
+    font-weight:800;
+}
+
+.service-item-content strong{
+    display:block;
+    margin-bottom:3px;
+    color:var(--soft);
+    font-size:13px;
+}
+
+.service-item-content span{
+    display:block;
+    color:var(--muted);
+    font-size:11px;
+    line-height:1.5;
+}
+
+.cta-price{
+    margin-bottom:14px;
+    color:var(--soft);
+    font-size:13px;
+}
+
+.cta-price strong{
+    color:var(--green-light);
+    font-size:18px;
+}
+
+.cta-button{
+    width:100%;
+}
+
+.service-next{
+    margin-top:17px;
+    padding:17px;
+    background:rgba(8,11,15,.42);
+    border:1px solid rgba(145,170,153,.12);
+    border-radius:15px;
+}
+
+.service-next-title{
+    margin-bottom:14px;
+    color:var(--soft);
+    font-size:13px;
+    font-weight:750;
+}
+
+.service-steps{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    margin-bottom:16px;
+}
+
+.service-step{
+    display:grid;
+    grid-template-columns:28px 1fr;
+    gap:9px;
+    align-items:start;
+}
+
+.service-step span{
+    color:var(--green-light);
+    font-size:10px;
+    font-weight:800;
+    letter-spacing:.5px;
+}
+
+.service-step p{
+    margin:0;
+    color:var(--muted);
+    font-size:12px;
+    line-height:1.55;
+}
+
+.service-next .primary{width:100%}
+
+/* FOOTER */
+
+.footer{
+    padding-top:25px;
+    text-align:center;
+    color:#555d68;
+    font-size:10px;
+    line-height:1.6;
+}
+
+.author{
+    margin-top:8px;
+    color:#68717d;
+    letter-spacing:.5px;
+}
+
+/* MOBILE */
+
+@media(max-width:650px){
+
+    .app{
+        width:calc(100% - 20px);
+        padding-top:12px;
+    }
+
+    .card{
+        padding:19px;
+        border-radius:21px;
+    }
+
+    .header h1{
+        letter-spacing:-2.7px;
+    }
+
+    .profile-grid{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+    .purchase-snapshot{
+        grid-template-columns:1fr;
+    }
+
+    .freedom-detail{
+        grid-template-columns:1fr;
+    }
+
+    .actions{
+        flex-direction:column;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+<header class="header">
+
+    <div class="brand">
+
+        <svg
+            class="brand-logo"
+            viewBox="0 0 32 32"
+            aria-hidden="true"
+        >
+            <rect
+                x="1"
+                y="1"
+                width="30"
+                height="30"
+                rx="9"
+                fill="#151a21"
+                stroke="#303844"
+            />
+
+            <path
+                d="M8 21V11L16 19L24 11V21"
+                fill="none"
+                stroke="#91AA99"
+                stroke-width="2.4"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+            />
+
+            <path
+                d="M13.5 16.5L16 19L20.5 14.5"
+                fill="none"
+                stroke="#B2C5B7"
+                stroke-width="1.7"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+            />
+        </svg>
+
+        <span>Могу себе позволить?</span>
+
+    </div>
+
+    <h1>
+        Можно<br>
+        покупать?
+    </h1>
+
+    <p class="header-description">
+        Помогаем понять не только,
+        хватает ли тебе денег сейчас,
+        но и сколько финансовой свободы
+        останется после покупки.
+    </p>
+
+</header>
+
+
+<!-- PROFILE FORM -->
+
+<section class="card" id="profileCard">
+
+    <div class="progress">
+        <div class="progress-bar" id="progressBar"></div>
+    </div>
+
+    <!-- STEP 1 -->
+
+    <div class="step" id="step1">
+
+        <h2>Сколько денег приходит?</h2>
+
+        <p class="step-description">
+            Укажи среднемесячный доход после налогов.
+            Если доход меняется, используй среднее значение.
+        </p>
+
+        <div class="field">
+
+            <label>Доход в месяц, ₽</label>
+
+            <input
+                id="income"
+                type="text"
+                inputmode="numeric"
+                placeholder="Например, 130 000"
+                data-money
+            >
+
+            <div class="money-hint">
+                Например: 130 000 ₽
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- STEP 2 -->
+
+    <div class="step hidden" id="step2">
+
+        <h2>Сколько нужно для жизни?</h2>
+
+        <p class="step-description">
+            Только обычные обязательные расходы:
+            жильё, еда, транспорт, связь,
+            коммунальные платежи и другое.
+        </p>
+
+        <div class="field">
+
+            <label>Расходы в месяц, ₽</label>
+
+            <input
+                id="expenses"
+                type="text"
+                inputmode="numeric"
+                placeholder="Например, 70 000"
+                data-money
+            >
+
+            <div class="money-hint">
+                Например: 70 000 ₽
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- STEP 3 -->
+
+    <div class="step hidden" id="step3">
+
+        <h2>Сколько уже накоплено?</h2>
+
+        <p class="step-description">
+            Деньги, которыми ты можешь воспользоваться сейчас.
+            Если накоплений нет — просто укажи 0.
+        </p>
+
+        <div class="field">
+
+            <label>Накопления, ₽</label>
+
+            <input
+                id="savings"
+                type="text"
+                inputmode="numeric"
+                placeholder="Например, 230 000"
+                data-money
+            >
+
+            <div class="money-hint">
+                Например: 230 000 ₽
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- STEP 4 -->
+
+    <div class="step hidden" id="step4">
+
+        <h2>Есть кредитные платежи?</h2>
+
+        <p class="step-description">
+            Если кредитов нет — укажи 0.
+        </p>
+
+        <div class="field">
+
+            <label>Платежи по кредитам в месяц, ₽</label>
+
+            <input
+                id="debt"
+                type="text"
+                inputmode="numeric"
+                placeholder="Например, 20 000"
+                data-money
+            >
+
+            <div class="money-hint">
+                Например: 20 000 ₽
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- STEP 5 -->
+
+    <div class="step hidden" id="step5">
+
+        <h2>Что хочешь купить?</h2>
+
+        <p class="step-description">
+            Название нужно только для персонального результата.
+        </p>
+
+        <div class="field">
+
+            <label>Покупка</label>
+
+            <input
+                id="item"
+                type="text"
+                placeholder="Например, ноутбук"
+            >
+
+        </div>
+
+        <div class="field">
+
+            <label>Стоимость, ₽</label>
+
+            <input
+                id="purchase"
+                type="text"
+                inputmode="numeric"
+                placeholder="Например, 120 000"
+                data-money
+            >
+
+            <div class="money-hint">
+                Например: 120 000 ₽
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- STEP 6 -->
+
+    <div class="step hidden" id="step6">
+
+        <h2>Что сейчас важнее?</h2>
+
+        <p class="step-description">
+            Это поможет сделать рекомендацию ближе
+            к твоей реальной ситуации.
+        </p>
+
+        <div class="field">
+
+            <label>Ближайшая цель</label>
+
+            <select id="goal">
+
+                <option value="reserve">
+                    Сохранить финансовый запас
+                </option>
+
+                <option value="move">
+                    Переезд
+                </option>
+
+                <option value="home">
+                    Жильё
+                </option>
+
+                <option value="travel">
+                    Путешествие
+                </option>
+
+                <option value="invest">
+                    Инвестиции
+                </option>
+
+                <option value="none">
+                    Конкретной цели нет
+                </option>
+
+            </select>
+
+        </div>
+
+    </div>
+
+
+    <div class="actions">
+
+        <button
+            class="secondary hidden"
+            id="backButton"
+        >
+            Назад
+        </button>
+
+        <button
+            class="primary"
+            id="nextButton"
+        >
+            Продолжить
+        </button>
+
+    </div>
+
+</section>
+
+
+<!-- RETURNING PROFILE -->
+
+<section class="card hidden" id="returningCard">
+
+    <div class="profile-header">
+
+        <div>
+
+            <div class="profile-title">
+                Твой финансовый профиль
+            </div>
+
+            <div
+                class="profile-updated"
+                id="profileUpdated"
+            ></div>
+
+        </div>
+
+    </div>
+
+
+    <div class="profile-grid">
+
+        <div class="profile-item">
+            <span class="profile-item-label">Доход</span>
+            <strong
+                class="profile-item-value"
+                id="profileIncome"
+            ></strong>
+        </div>
+
+        <div class="profile-item">
+            <span class="profile-item-label">Расходы</span>
+            <strong
+                class="profile-item-value"
+                id="profileExpenses"
+            ></strong>
+        </div>
+
+        <div class="profile-item">
+            <span class="profile-item-label">Накопления</span>
+            <strong
+                class="profile-item-value"
+                id="profileSavings"
+            ></strong>
+        </div>
+
+        <div class="profile-item">
+            <span class="profile-item-label">Кредиты</span>
+            <strong
+                class="profile-item-value"
+                id="profileDebt"
+            ></strong>
+        </div>
+
+    </div>
+
+
+    <div class="field">
+
+        <label>Что хочешь купить?</label>
+
+        <input
+            id="returningItem"
+            type="text"
+            placeholder="Например, телефон"
+        >
+
+    </div>
+
+
+    <div class="field">
+
+        <label>Стоимость покупки, ₽</label>
+
+        <input
+            id="returningPurchase"
+            type="text"
+            inputmode="numeric"
+            placeholder="Например, 120 000"
+            data-money
+        >
+
+        <div class="money-hint">
+            Например: 120 000 ₽
+        </div>
+
+    </div>
+
+
+    <div class="actions">
+
+        <button
+            class="primary"
+            id="checkReturning"
+        >
+            Могу себе позволить?
+        </button>
+
+    </div>
+
+
+    <div class="profile-edit">
+
+        <button
+            class="text-button"
+            id="editProfile"
+        >
+            Изменить финансовые данные
+        </button>
+
+    </div>
+
+</section>
+
+
+<!-- RESULT -->
+
+<section class="card result hidden" id="resultCard">
+
+    <div
+        class="result-icon"
+        id="resultIcon"
+    ></div>
+
+    <div
+        class="result-status"
+        id="resultStatus"
+    ></div>
+
+    <p
+        class="result-summary"
+        id="resultSummary"
+    ></p>
+
+
+    <div class="purchase-snapshot">
+
+        <div class="snapshot-item">
+
+            <span class="snapshot-label">
+                Покупка
+            </span>
+
+            <strong
+                class="snapshot-value"
+                id="snapshotPurchase"
+            ></strong>
+
+        </div>
+
+        <div class="snapshot-item">
+
+            <span class="snapshot-label">
+                Было накоплено
+            </span>
+
+            <strong
+                class="snapshot-value"
+                id="snapshotBefore"
+            ></strong>
+
+        </div>
+
+        <div class="snapshot-item">
+
+            <span class="snapshot-label">
+                Останется
+            </span>
+
+            <strong
+                class="snapshot-value"
+                id="snapshotAfter"
+            ></strong>
+
+        </div>
+
+    </div>
+
+
+    <!-- MEANING -->
+
+    <div class="meaning">
+
+        <div class="meaning-title">
+            Что это значит
+        </div>
+
+        <p
+            class="meaning-text"
+            id="meaningText"
+        ></p>
+
+    </div>
+
+
+    <!-- RECOMMENDATION -->
+
+    <div class="recommendation">
+
+        <div class="recommendation-title">
+            Что я бы сделала на твоём месте
+        </div>
+
+        <p
+            class="recommendation-text"
+            id="recommendationText"
+        ></p>
+
+        <div class="recommendation-action">
+
+            <span class="recommendation-action-label">
+                Следующий шаг
+            </span>
+
+            <strong
+                id="recommendationAction"
+            ></strong>
+
+        </div>
+
+    </div>
+
+
+    <!-- PLAN -->
+
+    <div class="plan">
+
+        <button
+            class="plan-toggle"
+            id="planToggle"
+            type="button"
+        >
+            <span>
+                Как сделать покупку комфортнее
+            </span>
+
+            <span>↓</span>
+        </button>
+
+
+        <div
+            class="plan-details"
+            id="planDetails"
+        >
+
+            <div class="plan-row">
+
+                <span>
+                    Сумма, которую можно потратить без сильного удара по запасу
+                </span>
+
+                <strong id="safeAmount"></strong>
+
+            </div>
+
+            <div class="plan-row">
+
+                <span>
+                    Нужно накопить ещё
+                </span>
+
+                <strong id="additionalAmount"></strong>
+
+            </div>
+
+            <div class="plan-row">
+
+                <span>
+                    Примерно ждать
+                </span>
+
+                <strong id="waitingTime"></strong>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- DETAILS -->
+
+    <div class="freedom-detail">
+
+        <div class="freedom-card">
+
+            <span class="freedom-label">
+                Остаётся после обязательных расходов
+            </span>
+
+            <strong
+                class="freedom-value"
+                id="freeCash"
+            ></strong>
+
+            <p class="freedom-description">
+                Примерно столько остаётся каждый месяц
+                после обычных расходов и кредитов.
+            </p>
+
+        </div>
+
+
+        <div class="freedom-card">
+
+            <span class="freedom-label">
+                Сколько месяцев свободных денег стоит покупка
+            </span>
+
+            <strong
+                class="freedom-value"
+                id="freedomValue"
+            ></strong>
+
+            <p class="freedom-description">
+                Чем меньше это число, тем легче
+                покупка ощущается для бюджета.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <!-- SERVICE CTA -->
+
+    <div class="cta">
+
+        <div class="cta-kicker">
+            Персональная работа
+        </div>
+
+        <div class="cta-title" id="ctaTitle">
+            Хочешь разобраться со своей ситуацией глубже?
+        </div>
+
+        <p class="cta-text" id="ctaText">
+            Калькулятор даёт общую картину.
+            На персональном разборе мы смотрим уже на твою
+            реальную финансовую ситуацию и принимаем решение,
+            которое подходит именно тебе.
+        </p>
+
+
+        <div class="service-list">
+
+            <div class="service-item">
+
+                <div class="service-check">✓</div>
+
+                <div class="service-item-content">
+
+                    <strong>
+                        Финансовая картина
+                    </strong>
+
+                    <span>
+Поймём, куда уходят деньги и сколько у тебя действительно остаётся.
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <div class="service-item">
+
+                <div class="service-check">✓</div>
+
+                <div class="service-item-content">
+
+                    <strong>
+                        Приоритеты
+                    </strong>
+
+                    <span>
+                        Определим, что сейчас важнее: накопить, закрыть кредит, потратить или начать инвестировать.
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <div class="service-item">
+
+                <div class="service-check">✓</div>
+
+                <div class="service-item-content">
+
+                    <strong>
+                        Составим понятный план действий
+                    </strong>
+
+                    <span>
+                      Соберём несколько конкретных шагов на ближайшее время.
+                    </span>
+
+                </div>
+
+            </div>
+
+        <div class="cta-price">
+
+           Персональный финансовый разбор →
+
+            <strong>
+                990 ₽
+            </strong>
+
+        </div>
+
+
+        <button
+            class="primary cta-button"
+            id="serviceButton"
+            type="button"
+        >
+            Хочу разобрать свою ситуацию
+        </button>
+
+
+        <div
+            class="service-next hidden"
+            id="serviceNext"
+        >
+
+            <div class="service-next-title">
+                Как всё происходит
+            </div>
+
+
+            <div class="service-steps">
+
+                <div class="service-step">
+
+                    <span>01</span>
+
+                    <p>
+                        Нажми «Написать мне».
+                    </p>
+
+                </div>
+
+
+                <div class="service-step">
+
+                    <span>02</span>
+
+                    <p>
+                        Отправь готовое сообщение.
+                        Данные о твоей покупке уже будут указаны.
+                    </p>
+
+                </div>
+
+
+                <div class="service-step">
+
+                    <span>03</span>
+
+                    <p>
+                        Я задам несколько вопросов,
+                        посмотрю твою ситуацию и объясню,
+                        что имеет смысл сделать.
+                    </p>
+
+                </div>
+
+
+                <div class="service-step">
+
+                    <span>04</span>
+
+                    <p>
+                        Если есть свободные деньги —
+                        отдельно разберём варианты их размещения
+                        и инвестиционные инструменты.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <button
+                class="primary"
+                id="contactButton"
+                type="button"
+            >
+                Написать мне
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <div class="actions">
+
+        <button
+            class="secondary"
+            id="newPurchase"
+            type="button"
+        >
+            Новая покупка
+        </button>
+
+    </div>
+
+
+    <div class="profile-edit">
+
+        <button
+            class="text-button"
+            id="editProfileFromResult"
+            type="button"
+        >
+            Изменить финансовые данные
+        </button>
+
+    </div>
+
+</section>
+
+
+<footer class="footer">
+
+    Расчёт является ориентировочной оценкой
+    финансовой нагрузки и не заменяет
+    индивидуальную финансовую консультацию.
+
+    <div class="author">
+      © 2026
+      <br>
+       Автор — Манакова В.С.
+      <br>
+      Все права защищены 
+    </div>
+
+</footer>
+
+</div>
+
+
+<script>
+
+/* =====================================================
+   SETTINGS
+===================================================== */
+
+const SERVICE_URL = "https://t.me/MAVERSE_Qo";
+
+const STORAGE_KEY = "mogu_sebe_pozvolit_profile";
+
+let currentStep = 1;
+const totalSteps = 6;
+
+let currentServiceMessage = "";
+let currentResultLevel = "";
+
+
+/* =====================================================
+   MONEY INPUT
+===================================================== */
+
+function cleanMoney(value){
+
+    return String(value || "")
+        .replace(/\s/g,"")
+        .replace(/[^\d]/g,"");
+
+}
+
+
+function parseMoney(value){
+
+    const cleaned =
+        cleanMoney(value);
+
+    return Number(cleaned) || 0;
+
+}
+
+
+function formatInputValue(value){
+
+    const cleaned =
+        cleanMoney(value);
+
+    if(!cleaned){
+        return "";
+    }
+
+    return Number(cleaned)
+        .toLocaleString("ru-RU");
+}
+
+
+function money(value){
+
+    return Math.max(
+        0,
+        Math.round(Number(value) || 0)
+    ).toLocaleString(
+        "ru-RU"
+    ) + " ₽";
+
+}
+
+
+document
+    .querySelectorAll("[data-money]")
+    .forEach(function(input){
+
+        input.addEventListener(
+            "input",
+            function(){
+
+                const cursorPosition =
+                    this.selectionStart;
+
+                const oldLength =
+                    this.value.length;
+
+                this.value =
+                    formatInputValue(
+                        this.value
+                    );
+
+                const newLength =
+                    this.value.length;
+
+                const difference =
+                    newLength - oldLength;
+
+                try{
+
+                    this.setSelectionRange(
+                        cursorPosition + difference,
+                        cursorPosition + difference
+                    );
+
+                }catch(e){}
+
+            }
+        );
+
+        input.addEventListener(
+            "blur",
+            function(){
+
+                this.value =
+                    formatInputValue(
+                        this.value
+                    );
+
+            }
+        );
+
+    });
+
+
+/* =====================================================
+   HELPERS
+===================================================== */
+
+function number(id){
+
+    return parseMoney(
+        document
+            .getElementById(id)
+            .value
+    );
+
+}
+
+
+function monthText(value){
+
+    if(!isFinite(value)){
+        return "очень большой запас";
+    }
+
+    const n =
+        Math.round(value * 10) / 10;
+
+    if(n === 1){
+        return "1 месяц";
+    }
+
+    if(n >= 2 && n <= 4){
+        return n + " месяца";
+    }
+
+    return n + " месяцев";
+
+}
+
+
+/* =====================================================
+   STORAGE
+===================================================== */
+
+function getProfile(){
+
+    const saved =
+        localStorage.getItem(
+            STORAGE_KEY
+        );
+
+    if(!saved){
+        return null;
+    }
+
+    try{
+        return JSON.parse(saved);
+    }catch{
+        return null;
+    }
+
+}
+
+
+function saveProfile(){
+
+    const profile = {
+
+        income:number("income"),
+        expenses:number("expenses"),
+        savings:number("savings"),
+        debt:number("debt"),
+
+        goal:
+            document
+                .getElementById("goal")
+                .value,
+
+        updatedAt:
+            new Date().toISOString()
+
+    };
+
+    localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify(profile)
+    );
+
+    return profile;
+
+}
+
+
+/* =====================================================
+   RETURNING PROFILE
+===================================================== */
+
+function showReturning(profile){
+
+    document
+        .getElementById("profileCard")
+        .classList.add("hidden");
+
+    document
+        .getElementById("resultCard")
+        .classList.add("hidden");
+
+    document
+        .getElementById("returningCard")
+        .classList.remove("hidden");
+
+
+    document
+        .getElementById("profileIncome")
+        .textContent =
+        money(profile.income);
+
+    document
+        .getElementById("profileExpenses")
+        .textContent =
+        money(profile.expenses);
+
+    document
+        .getElementById("profileSavings")
+        .textContent =
+        money(profile.savings);
+
+    document
+        .getElementById("profileDebt")
+        .textContent =
+        money(profile.debt);
+
+
+    const date =
+        new Date(profile.updatedAt);
+
+
+    document
+        .getElementById("profileUpdated")
+        .textContent =
+        "Профиль обновлён " +
+        new Intl.DateTimeFormat(
+            "ru-RU",
+            {
+                day:"numeric",
+                month:"long"
+            }
+        ).format(date);
+
+}
+
+
+/* =====================================================
+   FORM
+===================================================== */
+
+function showProfileForm(){
+
+    document
+        .getElementById("returningCard")
+        .classList.add("hidden");
+
+    document
+        .getElementById("resultCard")
+        .classList.add("hidden");
+
+    document
+        .getElementById("profileCard")
+        .classList.remove("hidden");
+
+}
+
+
+function renderStep(){
+
+    for(
+        let i=1;
+        i<=totalSteps;
+        i++
+    ){
+
+        document
+            .getElementById("step"+i)
+            .classList
+            .toggle(
+                "hidden",
+                i!==currentStep
+            );
+
+    }
+
+
+    document
+        .getElementById("progressBar")
+        .style.width =
+        (
+            currentStep /
+            totalSteps *
+            100
+        ) + "%";
+
+
+    document
+        .getElementById("backButton")
+        .classList
+        .toggle(
+            "hidden",
+            currentStep===1
+        );
+
+
+    document
+        .getElementById("nextButton")
+        .textContent =
+        currentStep===totalSteps
+            ? "Сохранить и проверить"
+            : "Продолжить";
+
+}
+
+
+/* =====================================================
+   VALIDATION
+===================================================== */
+
+function validateStep(){
+
+    if(
+        currentStep===1 &&
+        number("income")<=0
+    ){
+        return false;
+    }
+
+    if(
+        currentStep===2 &&
+        number("expenses")<0
+    ){
+        return false;
+    }
+
+    if(
+        currentStep===3 &&
+        number("savings")<0
+    ){
+        return false;
+    }
+
+    if(
+        currentStep===4 &&
+        number("debt")<0
+    ){
+        return false;
+    }
+
+    if(
+        currentStep===5 &&
+        number("purchase")<=0
+    ){
+        return false;
+    }
+
+    return true;
+
+}
+
+
+/* =====================================================
+   NEXT
+===================================================== */
+
+function nextStep(){
+
+    if(!validateStep()){
+
+        alert(
+            "Проверь, пожалуйста, введённые данные."
+        );
+
+        return;
+
+    }
+
+
+    if(currentStep<totalSteps){
+
+        currentStep++;
+
+        renderStep();
+
+        setTimeout(function(){
+
+            const field =
+                document.querySelector(
+                    "#step"+
+                    currentStep+
+                    " input, #step"+
+                    currentStep+
+                    " select"
+                );
+
+            if(field){
+                field.focus();
+            }
+
+        },100);
+
+        return;
+
+    }
+
+
+    const profile =
+        saveProfile();
+
+
+    calculate(
+        profile,
+        number("purchase"),
+        document
+            .getElementById("item")
+            .value
+            .trim()
+    );
+
+}
+
+
+function previousStep(){
+
+    if(currentStep>1){
+
+        currentStep--;
+
+        renderStep();
+
+    }
+
+}
+
+
+document
+    .getElementById("nextButton")
+    .addEventListener(
+        "click",
+        nextStep
+    );
+
+
+document
+    .getElementById("backButton")
+    .addEventListener(
+        "click",
+        previousStep
+    );
+
+
+/* =====================================================
+   ENTER
+===================================================== */
+
+document.addEventListener(
+    "keydown",
+    function(event){
+
+        if(event.key!=="Enter"){
+            return;
+        }
+
+        if(
+            event.target.tagName==="SELECT"
+        ){
+            return;
+        }
+
+        const profileCard =
+            document.getElementById(
+                "profileCard"
+            );
+
+        const returningCard =
+            document.getElementById(
+                "returningCard"
+            );
+
+
+        if(
+            !profileCard
+                .classList
+                .contains("hidden")
+        ){
+
+            event.preventDefault();
+
+            nextStep();
+
+            return;
+
+        }
+
+
+        if(
+            !returningCard
+                .classList
+                .contains("hidden")
+        ){
+
+            event.preventDefault();
+
+            checkReturningPurchase();
+
+        }
+
+    }
+);
+
+
+/* =====================================================
+   RETURNING PURCHASE
+===================================================== */
+
+function checkReturningPurchase(){
+
+    const profile =
+        getProfile();
+
+    const purchase =
+        parseMoney(
+            document
+                .getElementById(
+                    "returningPurchase"
+                )
+                .value
+        );
+
+    const item =
+        document
+            .getElementById(
+                "returningItem"
+            )
+            .value
+            .trim();
+
+
+    if(purchase<=0){
+
+        alert(
+            "Введи стоимость покупки."
+        );
+
+        return;
+
+    }
+
+
+    calculate(
+        profile,
+        purchase,
+        item
+    );
+
+}
+
+
+document
+    .getElementById(
+        "checkReturning"
+    )
+    .addEventListener(
+        "click",
+        checkReturningPurchase
+    );
+
+
+/* =====================================================
+   SERVICE CTA
+===================================================== */
+
+function updateServiceCTA(
+    level,
+    item,
+    purchase
+){
+
+    const title =
+        document.getElementById(
+            "ctaTitle"
+        );
+
+    const text =
+        document.getElementById(
+            "ctaText"
+        );
+
+
+    if(level==="green"){
+
+        title.textContent =
+            "Покупка выглядит посильной. Теперь можно подумать шире.";
+
+        text.textContent =
+            "По цифрам покупка тебе по силам. " +
+            "На персональном разборе мы можем посмотреть, " +
+            "что делать со свободными деньгами дальше: " +
+            "как сохранить запас, распределить деньги между целями " +
+            "и какую часть можно направить в инвестиции.";
+
+    }
+
+    else if(level==="yellow"){
+
+        title.textContent =
+            "Можно купить. Вопрос — когда будет комфортнее.";
+
+        text.textContent =
+            "Я помогу определить конкретную сумму, " +
+            "которую лучше оставить в запасе, " +
+            "сколько ещё накопить и когда покупка перестанет " +
+            "ощущаться как слишком большая трата.";
+
+    }
+
+    else{
+
+        title.textContent =
+            "Сейчас важнее не отказаться от покупки, а понять план.";
+
+        text.textContent =
+            "Разберём, почему покупка сейчас давит на бюджет, " +
+            "что можно изменить и сколько нужно накопить, " +
+            "чтобы вернуться к ней спокойно. " +
+            "А когда появится свободный капитал — разберём, " +
+            "как его можно разместить и инвестировать.";
+
+    }
+
+
+    currentResultLevel =
+        level;
+
+
+    currentServiceMessage =
+        "Здравствуйте! Хочу заказать персональный финансовый разбор.\n\n" +
+
+        "Покупка: " +
+        (item || "не указана") +
+        "\n" +
+
+        "Стоимость: " +
+        money(purchase) +
+        "\n\n" +
+
+        "Результат калькулятора: " +
+
+        (
+            level==="green"
+                ? "покупка выглядит посильной"
+                : level==="yellow"
+                    ? "лучше немного подождать"
+                    : "сейчас покупка сильно влияет на запас"
+        );
+
+}
+
+
+/* =====================================================
+   CALCULATION
+===================================================== */
+
+function calculate(
+    profile,
+    purchase,
+    item
+){
+
+    const income =
+        profile.income;
+
+    const expenses =
+        profile.expenses;
+
+    const savings =
+        profile.savings;
+
+    const debt =
+        profile.debt;
+
+    const goal =
+        profile.goal;
+
+
+    /*
+       Важное изменение:
+
+       Доход сам по себе не определяет,
+       можно ли покупать.
+
+       Если доход хороший, но накоплений мало,
+       мы прямо объясняем человеку:
+
+       "Ты можешь позволить себе эту покупку
+       по доходу, но пока у тебя мало запаса."
+
+       Это гораздо понятнее, чем сложные
+       финансовые коэффициенты.
+    */
+
+
+    const monthlyBase =
+        expenses + debt;
+
+
+    const freeCash =
+        Math.max(
+            0,
+            income -
+            expenses -
+            debt
+        );
+
+
+    const afterSavings =
+        Math.max(
+            0,
+            savings -
+            purchase
+        );
+
+
+    const debtLoad =
+        income>0
+            ? debt/income
+            : 1;
+
+
+    const purchaseShare =
+        savings>0
+            ? purchase/savings
+            : 1;
+
+
+    const targetReserve =
+        monthlyBase * 3;
+
+
+    const safePurchase =
+        Math.max(
+            0,
+            savings-targetReserve
+        );
+
+
+    const additional =
+        Math.max(
+            0,
+            purchase-safePurchase
+        );
+
+
+    const monthlySaving =
+        Math.max(
+            1,
+            freeCash*.35
+        );
+
+
+    const waitMonths =
+        Math.ceil(
+            additional/monthlySaving
+        );
+
+
+    const freedomPrice =
+        freeCash>0
+            ? purchase/freeCash
+            : Infinity;
+
+
+    /*
+       Сначала смотрим на реальную
+       картину денег.
+    */
+
+
+    const incomeCanSupportPurchase =
+        income>=purchase/2;
+
+
+    const hasLittleSavings =
+        savings <
+        Math.max(
+            monthlyBase*2,
+            purchase
+        );
+
+
+    const hasNoSavings =
+        savings<=0;
+
+
+    let level;
+    let title;
+    let icon;
+    let summary;
+    let meaning;
+    let recommendation;
+    let action;
+
+
+    /* =================================================
+       NO / VERY LOW SAVINGS
+    ================================================= */
+
+    if(
+        incomeCanSupportPurchase &&
+        (
+            hasNoSavings ||
+            hasLittleSavings
+        )
+    ){
+
+        /*
+           Это отдельная логика.
+
+           Доход нормальный,
+           но запас маленький.
+
+           Именно на этом делаем акцент.
+        */
+
+        level =
+            purchase<=freeCash*2
+                ? "yellow"
+                : "red";
+
+
+        title =
+            level==="yellow"
+                ? "ДОХОД ПОЗВОЛЯЕТ, НО ЗАПАС МАЛЕНЬКИЙ"
+                : "СНАЧАЛА ЛУЧШЕ СОЗДАТЬ ЗАПАС";
+
+
+        icon =
+            level==="yellow"
+                ? "•"
+                : "!";
+
+
+        summary =
+            "По твоему доходу эта покупка выглядит посильной. " +
+            "Главный вопрос сейчас не в доходе, а в накоплениях: " +
+            (
+                hasNoSavings
+                    ? "их пока нет."
+                    : "их пока недостаточно для спокойной покупки."
+            );
+
+
+        meaning =
+            "Ты зарабатываешь достаточно, чтобы в целом рассматривать " +
+            "такую покупку. Но после неё у тебя останется " +
+            money(afterSavings) +
+            ". " +
+            (
+                hasNoSavings
+                    ? "Если накоплений почти нет, одна крупная трата может оставить тебя без финансового запаса."
+                    : "Запас после покупки будет небольшим, поэтому сейчас важнее не сам факт покупки, а то, сколько денег останется после неё."
+            );
+
+
+        recommendation =
+            hasNoSavings
+                ? "Я бы не отказывалась от покупки навсегда. " +
+                  "Но сначала создала бы хотя бы небольшой запас денег. " +
+                  "Тогда покупка не будет означать, что после неё " +
+                  "у тебя практически ничего не осталось."
+
+                : "Я бы немного увеличила накопления перед покупкой. " +
+                  "По доходу ты её потянуть можешь, " +
+                  "но сейчас слишком большая часть твоего запаса уйдёт на одну вещь.";
+
+
+        action =
+            additional>0
+                ? "Сначала накопи ещё примерно " +
+                  money(additional) +
+                  ", а затем вернись к покупке."
+
+                : "Сначала увеличь финансовый запас, " +
+                  "а потом спокойно решай, покупать или нет.";
+
+    }
+
+
+    /* =================================================
+       COMFORTABLE
+    ================================================= */
+
+    else if(
+        savings>=targetReserve &&
+        afterSavings>=targetReserve &&
+        debtLoad<.4 &&
+        freedomPrice<=4
+    ){
+
+        level="green";
+
+        title="МОЖНО ПОКУПАТЬ";
+
+        icon="✓";
+
+
+        summary =
+            "По твоим цифрам покупка выглядит посильной: " +
+            "доход позволяет её оплачивать, " +
+            "а после покупки у тебя остаётся хороший запас.";
+
+
+        meaning =
+            "После покупки у тебя останется " +
+            money(afterSavings) +
+            ". " +
+            "Это значит, что покупка не должна сильно " +
+            "повлиять на твою повседневную жизнь.";
+
+
+        recommendation =
+            "Если покупка действительно нужна, " +
+            "я бы рассматривала её сейчас. " +
+            "При этом часть свободных денег можно продолжить " +
+            "откладывать или направить на инвестиции.";
+
+
+        action =
+            "Покупку можно совершать. " +
+            "После неё не забывай продолжать формировать запас.";
+
+    }
+
+
+    /* =================================================
+       MIDDLE
+    ================================================= */
+
+    else if(
+        afterSavings>=monthlyBase*2 &&
+        purchaseShare<=.7
+    ){
+
+        level="yellow";
+
+        title="ЛУЧШЕ НЕМНОГО ПОДОЖДАТЬ";
+
+        icon="•";
+
+
+        summary =
+            "Ты можешь оплатить покупку, " +
+            "но сейчас она заметно уменьшит твой запас денег.";
+
+
+        meaning =
+            "После покупки останется " +
+            money(afterSavings) +
+            ". " +
+            "Это не критично, но запас станет заметно меньше.";
+
+
+        recommendation =
+            "Если покупка не срочная, " +
+            "я бы немного подождала. " +
+            "За это время можно увеличить накопления " +
+            "и купить вещь без ощущения, что денег стало мало.";
+
+
+        action =
+            additional>0
+                ? "Накопи ещё примерно " +
+                  money(additional) +
+                  "."
+
+                : "Дай накоплениям немного вырасти " +
+                  "и вернись к покупке позже.";
+
+    }
+
+
+    /* =================================================
+       RED
+    ================================================= */
+
+    else{
+
+        level="red";
+
+        title="СЕЙЧАС ЛУЧШЕ НЕ ПОКУПАТЬ";
+
+        icon="!";
+
+
+        summary =
+            "Сейчас покупка слишком сильно уменьшит " +
+            "твой финансовый запас.";
+
+
+        meaning =
+            "После покупки останется " +
+            money(afterSavings) +
+            ". " +
+            "Если что-то неожиданное произойдёт, " +
+            "тебе может не хватить свободных денег.";
+
+
+        recommendation =
+            "Я бы пока отложила покупку. " +
+            "Сначала стоит создать запас, " +
+            "а уже потом возвращаться к этой цели.";
+
+
+        action =
+            additional>0
+                ? "Сначала накопи ещё примерно " +
+                  money(additional) +
+                  "."
+
+                : "Сначала восстанови накопления, " +
+                  "а потом вернись к покупке.";
+
+    }
+
+
+    /* =================================================
+       CTA
+    ================================================= */
+
+    updateServiceCTA(
+        level,
+        item,
+        purchase
+    );
+
+
+    /* =================================================
+       SHOW
+    ================================================= */
+
+    document
+        .getElementById("profileCard")
+        .classList.add("hidden");
+
+    document
+        .getElementById("returningCard")
+        .classList.add("hidden");
+
+    document
+        .getElementById("resultCard")
+        .classList.remove("hidden");
+
+
+    const iconElement =
+        document.getElementById(
+            "resultIcon"
+        );
+
+
+    iconElement.textContent =
+        icon;
+
+    iconElement.className =
+        "result-icon " + level;
+
+
+    const statusElement =
+        document.getElementById(
+            "resultStatus"
+        );
+
+
+    statusElement.textContent =
+        title;
+
+    statusElement.className =
+        "result-status " + level;
+
+
+    document
+        .getElementById("resultSummary")
+        .textContent =
+        summary;
+
+
+    document
+        .getElementById("snapshotPurchase")
+        .textContent =
+        money(purchase);
+
+
+    document
+        .getElementById("snapshotBefore")
+        .textContent =
+        money(savings);
+
+
+    document
+        .getElementById("snapshotAfter")
+        .textContent =
+        money(afterSavings);
+
+
+    document
+        .getElementById("meaningText")
+        .textContent =
+        meaning;
+
+
+    document
+        .getElementById("recommendationText")
+        .textContent =
+        recommendation;
+
+
+    document
+        .getElementById("recommendationAction")
+        .textContent =
+        action;
+
+
+    document
+        .getElementById("safeAmount")
+        .textContent =
+        money(safePurchase);
+
+
+    document
+        .getElementById("additionalAmount")
+        .textContent =
+        money(additional);
+
+
+    document
+        .getElementById("waitingTime")
+        .textContent =
+
+        additional<=0
+
+            ? "можно рассматривать сейчас"
+
+            :
+
+            waitMonths<=1
+
+                ? "около 1 месяца"
+
+                :
+
+                "около " +
+                waitMonths +
+                " месяцев";
+
+
+    document
+        .getElementById("freeCash")
+        .textContent =
+        money(freeCash);
+
+
+    document
+        .getElementById("freedomValue")
+        .textContent =
+
+        isFinite(freedomPrice)
+
+            ? (
+                Math.round(
+                    freedomPrice*10
+                )/10
+              )
+
+            : "—";
+
+
+    document
+        .getElementById("serviceNext")
+        .classList.add("hidden");
+
+
+    document
+        .getElementById("serviceButton")
+        .classList.remove("hidden");
+
+
+    window.scrollTo({
+        top:0,
+        behavior:"smooth"
+    });
+
+}
+
+
+/* =====================================================
+   PLAN TOGGLE
+===================================================== */
+
+document
+    .getElementById("planToggle")
+    .addEventListener(
+        "click",
+        function(){
+
+            const details =
+                document.getElementById(
+                    "planDetails"
+                );
+
+
+            const opened =
+                details.classList.toggle(
+                    "open"
+                );
+
+
+            this.classList.toggle(
+                "open",
+                opened
+            );
+
+        }
+    );
+
+
+/* =====================================================
+   NEW PURCHASE
+===================================================== */
+
+document
+    .getElementById("newPurchase")
+    .addEventListener(
+        "click",
+        function(){
+
+            const profile =
+                getProfile();
+
+
+            document
+                .getElementById("resultCard")
+                .classList.add("hidden");
+
+
+            showReturning(profile);
+
+
+            document
+                .getElementById("returningItem")
+                .value="";
+
+
+            document
+                .getElementById("returningPurchase")
+                .value="";
+
+
+            document
+                .getElementById("returningPurchase")
+                .focus();
+
+        }
+    );
+
+
+/* =====================================================
+   EDIT PROFILE
+===================================================== */
+
+function editProfile(){
+
+    const profile =
+        getProfile();
+
+
+    if(!profile){
+
+        showProfileForm();
+
+        return;
+
+    }
+
+
+    document
+        .getElementById("income")
+        .value =
+        formatInputValue(profile.income);
+
+
+    document
+        .getElementById("expenses")
+        .value =
+        formatInputValue(profile.expenses);
+
+
+    document
+        .getElementById("savings")
+        .value =
+        formatInputValue(profile.savings);
+
+
+    document
+        .getElementById("debt")
+        .value =
+        formatInputValue(profile.debt);
+
+
+    document
+        .getElementById("goal")
+        .value =
+        profile.goal || "reserve";
+
+
+    currentStep=1;
+
+    renderStep();
+
+    showProfileForm();
+
+    document
+        .getElementById("income")
+        .focus();
+
+}
+
+
+document
+    .getElementById("editProfile")
+    .addEventListener(
+        "click",
+        editProfile
+    );
+
+
+document
+    .getElementById("editProfileFromResult")
+    .addEventListener(
+        "click",
+        editProfile
+    );
+
+
+/* =====================================================
+   SERVICE BUTTON
+===================================================== */
+
+document
+    .getElementById("serviceButton")
+    .addEventListener(
+        "click",
+        function(){
+
+            const next =
+                document.getElementById(
+                    "serviceNext"
+                );
+
+
+            next.classList.remove(
+                "hidden"
+            );
+
+
+            this.classList.add(
+                "hidden"
+            );
+
+
+            setTimeout(function(){
+
+                next.scrollIntoView({
+                    behavior:"smooth",
+                    block:"nearest"
+                });
+
+            },100);
+
+        }
+    );
+
+
+/* =====================================================
+   CONTACT
+===================================================== */
+
+document
+    .getElementById("contactButton")
+    .addEventListener(
+        "click",
+        function(){
+
+            if(SERVICE_URL){
+
+                const separator =
+                    SERVICE_URL.includes("?")
+                        ? "&"
+                        : "?";
+
+
+                const url =
+                    SERVICE_URL +
+                    separator +
+                    "text=" +
+                    encodeURIComponent(
+                        currentServiceMessage
+                    );
+
+
+                window.open(
+                    url,
+                    "_blank"
+                );
+
+                return;
+
+            }
+
+
+            navigator.clipboard
+                .writeText(
+                    currentServiceMessage
+                )
+                .then(function(){
+
+                    alert(
+                        "Готовое сообщение скопировано."
+                    );
+
+                })
+                .catch(function(){
+
+                    alert(
+                        currentServiceMessage
+                    );
+
+                });
+
+        }
+    );
+
+
+/* =====================================================
+   INIT
+===================================================== */
+
+const existingProfile =
+    getProfile();
+
+
+if(existingProfile){
+
+    showReturning(
+        existingProfile
+    );
+
+}else{
+
+    renderStep();
+
+}
+
+</script>
+
+</body>
+</html>
