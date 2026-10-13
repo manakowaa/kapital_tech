@@ -727,6 +727,13 @@ button:active{
     letter-spacing:.5px;
 }
 
+/* RESERVE SETTINGS */
+.reserve-panel{margin-top:18px;padding:17px;border:1px solid var(--border2);border-radius:16px;background:rgba(8,11,15,.28)}
+.reserve-panel-title{margin:0 0 7px;color:var(--text);font-size:14px;font-weight:750}
+.reserve-panel-description{margin:0 0 14px;color:var(--muted);font-size:12px;line-height:1.55}
+.reserve-preview{margin-top:10px;padding:12px;border-radius:12px;background:rgba(145,170,153,.08);color:var(--soft);font-size:12px;line-height:1.5}
+.reserve-preview strong{color:var(--green-light)}
+
 /* MOBILE */
 
 @media(max-width:650px){
@@ -1049,6 +1056,24 @@ button:active{
 
         </div>
 
+        <div class="reserve-panel" data-reserve-panel="profile">
+            <h3 class="reserve-panel-title">Неприкосновенный резерв</h3>
+            <p class="reserve-panel-description">Выбери, сколько денег хочешь сохранить после покупки. Можно рассчитать сумму по расходам или задать её самостоятельно.</p>
+            <div class="field">
+                <label for="profileReserveMode">Как определить резерв?</label>
+                <select id="profileReserveMode"><option value="auto">Рассчитать по расходам</option><option value="manual">Указать сумму вручную</option></select>
+            </div>
+            <div class="field" id="profileReserveMonthsField">
+                <label for="profileReserveMonths">На сколько месяцев сохранить запас?</label>
+                <select id="profileReserveMonths"><option value="3">3 месяца</option><option value="6">6 месяцев</option><option value="12">12 месяцев</option></select>
+            </div>
+            <div class="field hidden" id="profileReserveAmountField">
+                <label for="profileReserveAmount">Моя сумма резерва, ₽</label>
+                <input id="profileReserveAmount" type="text" inputmode="numeric" placeholder="Например, 120 000" data-money>
+            </div>
+            <div class="reserve-preview" id="profileReservePreview" aria-live="polite"></div>
+        </div>
+
     </div>
 
 
@@ -1131,6 +1156,24 @@ button:active{
 
     </div>
 
+
+    <div class="reserve-panel" data-reserve-panel="returning">
+        <h3 class="reserve-panel-title">Неприкосновенный резерв</h3>
+        <p class="reserve-panel-description">Настрой сумму, которую хочешь сохранить после покупки. Изменение применяется к этому и следующим расчётам.</p>
+        <div class="field">
+            <label for="returningReserveMode">Как определить резерв?</label>
+            <select id="returningReserveMode"><option value="auto">Рассчитать по расходам</option><option value="manual">Указать сумму вручную</option></select>
+        </div>
+        <div class="field" id="returningReserveMonthsField">
+            <label for="returningReserveMonths">На сколько месяцев сохранить запас?</label>
+            <select id="returningReserveMonths"><option value="3">3 месяца</option><option value="6">6 месяцев</option><option value="12">12 месяцев</option></select>
+        </div>
+        <div class="field hidden" id="returningReserveAmountField">
+            <label for="returningReserveAmount">Моя сумма резерва, ₽</label>
+            <input id="returningReserveAmount" type="text" inputmode="numeric" placeholder="Например, 120 000" data-money>
+        </div>
+        <div class="reserve-preview" id="returningReservePreview" aria-live="polite"></div>
+    </div>
 
     <div class="field">
 
@@ -1319,6 +1362,16 @@ button:active{
             class="plan-details"
             id="planDetails"
         >
+
+            <div class="plan-row">
+
+                <span>
+                    Неприкосновенный резерв
+                </span>
+
+                <strong id="targetReserveAmount"></strong>
+
+            </div>
 
             <div class="plan-row">
 
@@ -1626,7 +1679,7 @@ button:active{
    SETTINGS
 ===================================================== */
 
-const SERVICE_URL = "https://t.me/manakovavs";
+const SERVICE_URL = "https://t.me/MAVERSE_Qo";
 
 const STORAGE_KEY = "mogu_sebe_pozvolit_profile";
 
@@ -1776,6 +1829,42 @@ function monthText(value){
 
 
 /* =====================================================
+   RESERVE SETTINGS
+===================================================== */
+function getReserveAmount(profile){
+    const base = Math.max(0, Number(profile.expenses) || 0) + Math.max(0, Number(profile.debt) || 0);
+    if((profile.reserveMode || "auto") === "manual") return Math.max(0, Number(profile.reserveAmount) || 0);
+    const months = [3,6,12].includes(Number(profile.reserveMonths)) ? Number(profile.reserveMonths) : 3;
+    return base * months;
+}
+function updateReserveUI(prefix, sourceProfile){
+    const mode=document.getElementById(prefix+"ReserveMode"), months=document.getElementById(prefix+"ReserveMonths"), amount=document.getElementById(prefix+"ReserveAmount");
+    const monthsField=document.getElementById(prefix+"ReserveMonthsField"), amountField=document.getElementById(prefix+"ReserveAmountField"), preview=document.getElementById(prefix+"ReservePreview");
+    if(!mode || !months || !amount || !preview) return;
+    const manual=mode.value==="manual";
+    monthsField.classList.toggle("hidden",manual); amountField.classList.toggle("hidden",!manual);
+    const saved=getProfile() || {};
+    const profile=sourceProfile || {expenses: prefix==="profile" ? number("expenses") : (saved.expenses||0), debt: prefix==="profile" ? number("debt") : (saved.debt||0)};
+    profile.reserveMode=mode.value; profile.reserveMonths=Number(months.value)||3; profile.reserveAmount=parseMoney(amount.value);
+    const target=getReserveAmount(profile);
+    preview.innerHTML="Неприкосновенный резерв: <strong>"+money(target)+"</strong>"+(manual?"<br>Используется указанная тобой сумма.":"<br>Расчёт: расходы и платежи по кредитам × "+profile.reserveMonths+" мес.");
+}
+function syncReserveSettings(prefix){
+    const profile=getProfile(); if(!profile) return;
+    profile.reserveMode=document.getElementById(prefix+"ReserveMode").value;
+    profile.reserveMonths=Number(document.getElementById(prefix+"ReserveMonths").value)||3;
+    profile.reserveAmount=parseMoney(document.getElementById(prefix+"ReserveAmount").value);
+    profile.updatedAt=new Date().toISOString(); localStorage.setItem(STORAGE_KEY,JSON.stringify(profile)); updateReserveUI(prefix,profile);
+}
+["profile","returning"].forEach(function(prefix){
+    ["ReserveMode","ReserveMonths","ReserveAmount"].forEach(function(suffix){
+        const control=document.getElementById(prefix+suffix); if(!control) return;
+        control.addEventListener("change",function(){ if(prefix==="returning") syncReserveSettings(prefix); else updateReserveUI(prefix); });
+        if(suffix==="ReserveAmount") control.addEventListener("input",function(){updateReserveUI(prefix);});
+    });
+});
+
+/* =====================================================
    STORAGE
 ===================================================== */
 
@@ -1807,6 +1896,9 @@ function saveProfile(){
         expenses:number("expenses"),
         savings:number("savings"),
         debt:number("debt"),
+        reserveMode:document.getElementById("profileReserveMode").value,
+        reserveMonths:Number(document.getElementById("profileReserveMonths").value)||3,
+        reserveAmount:parseMoney(document.getElementById("profileReserveAmount").value),
 
         goal:
             document
@@ -1867,6 +1959,10 @@ function showReturning(profile){
         .textContent =
         money(profile.debt);
 
+    document.getElementById("returningReserveMode").value=profile.reserveMode||"auto";
+    document.getElementById("returningReserveMonths").value=String(profile.reserveMonths||3);
+    document.getElementById("returningReserveAmount").value=formatInputValue(profile.reserveAmount||0);
+    updateReserveUI("returning",profile);
 
     const date =
         new Date(profile.updatedAt);
@@ -2376,8 +2472,11 @@ function calculate(
             : 1;
 
 
-    const targetReserve =
-        monthlyBase * 3;
+    const reserveMode=profile.reserveMode||"auto";
+    const reserveMonths=[3,6,12].includes(Number(profile.reserveMonths))?Number(profile.reserveMonths):3;
+    const targetReserve=reserveMode==="manual"
+        ? Math.max(0,Number(profile.reserveAmount)||0)
+        : monthlyBase*reserveMonths;
 
 
     const safePurchase =
@@ -2763,6 +2862,11 @@ function calculate(
 
 
     document
+        .getElementById("targetReserveAmount")
+        .textContent =
+        money(targetReserve);
+
+    document
         .getElementById("safeAmount")
         .textContent =
         money(safePurchase);
@@ -2953,6 +3057,10 @@ function editProfile(){
         .value =
         profile.goal || "reserve";
 
+    document.getElementById("profileReserveMode").value=profile.reserveMode||"auto";
+    document.getElementById("profileReserveMonths").value=String(profile.reserveMonths||3);
+    document.getElementById("profileReserveAmount").value=formatInputValue(profile.reserveAmount||0);
+    updateReserveUI("profile",profile);
 
     currentStep=1;
 
@@ -3085,6 +3193,7 @@ document
 /* =====================================================
    INIT
 ===================================================== */
+updateReserveUI("profile");
 
 const existingProfile =
     getProfile();
